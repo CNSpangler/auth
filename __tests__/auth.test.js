@@ -33,16 +33,30 @@ describe('auth routes', () => {
   });
 
   it('logs in a user', async() => {
-    await User.create({ username: 'spot', password: 'spotWasHere' });
+    await User.create({ username: 'mario', password: 'itsame' });
 
     return request(app)
       .post('/api/v1/auth/login')
-      .send({ username: 'spot', password: 'spotWasHere' })
+      .send({ username: 'mario', password: 'itsame' })
       .then(res => {
         expect(res.body).toEqual({
           _id: expect.any(String),
-          username: 'spot',
+          username: 'mario',
           __v: 0
+        });
+      });
+  });
+
+  it('fails to login a user with bad password', async() => {
+    await User.create({ username: 'mario', password: 'itsame' });
+
+    return request(app)
+      .post('/api/v1/auth/login')
+      .send({ username: 'mario', password: 'badPassword!oops' })
+      .then(res => {
+        expect(res.body).toEqual({
+          message: 'Invalid username/password',
+          status: 403
         });
       });
   });
